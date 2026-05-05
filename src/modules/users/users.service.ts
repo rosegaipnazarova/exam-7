@@ -14,17 +14,19 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const newAdmin = this.usersRepository.create({
-      ...createUserDto,
+    const { password, role, ...rest } = createUserDto;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Type casting yordamida enum xatosini bartaraf etamiz
+    const newUser = this.usersRepository.create({
+      ...rest,
       password: hashedPassword,
-      
-      role: createUserDto.role || UserRole.ADMIN, 
+      role: (role as unknown as UserRole) || UserRole.ADMIN,
     });
-    return this.usersRepository.save(newAdmin);
+    
+    return this.usersRepository.save(newUser);
   }
 
-  
   async findByLogin(login: string) {
     return this.usersRepository.findOne({ 
       where: { login }, 
@@ -54,11 +56,15 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+    // Klonlash orqali original DTOga ta'sir qilmasdan o'zgartiramiz
+    const updateData: any = { ...updateUserDto };
+    
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
     }
     
-    await this.usersRepository.update(id, updateUserDto);
+    // TypeORM update metodida turlar mos kelmasligi uchun 'as any' ishlatamiz
+    await this.usersRepository.update(id, updateData);
     return this.findOne(id);
   }
 
