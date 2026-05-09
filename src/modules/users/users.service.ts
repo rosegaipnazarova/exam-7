@@ -17,7 +17,6 @@ export class UsersService {
     const { password, role, ...rest } = createUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    // Type casting yordamida enum xatosini bartaraf etamiz
     const newUser = this.usersRepository.create({
       ...rest,
       password: hashedPassword,
@@ -27,10 +26,13 @@ export class UsersService {
     return this.usersRepository.save(newUser);
   }
 
-  async findByLogin(login: string) {
-    return this.usersRepository.findOne({ 
-      where: { login }, 
-      select: ['id', 'login', 'password', 'role'] 
+  // --- SHU YERGA QO'SHILDI ---
+
+
+ async findByLogin(login: string) {
+    return await this.usersRepository.findOne({ 
+      where: { login: login }, 
+      select: ['id', 'login', 'password', 'role', 'firstName', 'lastName'] // Bazadagi bor maydonlarni tanladik
     });
   }
 
@@ -46,7 +48,7 @@ export class UsersService {
 
     return await qb.getMany();
   }
-
+  
   async findOne(id: number) {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
@@ -56,14 +58,12 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    // Klonlash orqali original DTOga ta'sir qilmasdan o'zgartiramiz
     const updateData: any = { ...updateUserDto };
     
     if (updateData.password) {
       updateData.password = await bcrypt.hash(updateData.password, 10);
     }
     
-    // TypeORM update metodida turlar mos kelmasligi uchun 'as any' ishlatamiz
     await this.usersRepository.update(id, updateData);
     return this.findOne(id);
   }

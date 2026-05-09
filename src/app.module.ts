@@ -19,16 +19,17 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     }),
 
     // 2. Ma'lumotlar bazasiga ulanish sozlamasi
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.PORT || '4001') ,
-      username: process.env.DB_USERNAME || 'postgres',
-      password: process.env.DB_PASSWORD || '1226',
-      database: process.env.DB_NAME || 'Panel',
-      autoLoadEntities: true, // Entity-larni avtomat topish uchun
-      synchronize: true,      // Bazada jadvallarni avtomat yaratish uchun
-    }),
+// TO'G'RI VARIANT:
+TypeOrmModule.forRoot({
+  type: 'postgres',
+  host: process.env.DB_HOST || '127.0.0.1',
+  port: 5432, // Portni vaqtincha mana shunday qo'lda yozib qo'ying
+  username: process.env.DB_USERNAME || 'postgres',
+  password: process.env.DB_PASSWORD || '1226',
+  database: process.env.DB_NAME || 'PANEL',
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  synchronize: true,
+}),
 
     // 3. Sizning modullaringiz
     AuthModule,

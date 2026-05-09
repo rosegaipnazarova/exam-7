@@ -1,15 +1,16 @@
-// src/modules/dashboard/dashboard.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DashboardService } from './dashboard.service';
-import { DashboardController } from './dashboard.controller';
+import { AttendanceService } from './attendance.service';
+import { AttendanceController } from './attendance.controller';
+import { Attendance } from './entities/attendance.entity';
 import { Student } from '../students/entities/student.entity';
-import { Payment } from '../payments/entities/payment.entity';
 import { Group } from '../groups/entities/group.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Student, Payment, Group])],
-  controllers: [DashboardController],
-  providers: [DashboardService],
+  imports: [
+    TypeOrmModule.forFeature([Attendance, Student, Group])
+  ],
+  controllers: [AttendanceController],
+  providers: [AttendanceService],
 })
-export class DashboardModule {}
+export class AttendanceModule {}
