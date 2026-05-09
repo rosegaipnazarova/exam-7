@@ -16,8 +16,9 @@ export class StudentsService {
     return this.studentRepository.save(newStudent);
   }
 
-  async findAll(search?: string) {
-    const queryBuilder = this.studentRepository.createQueryBuilder('student');
+ async findAll(search?: string) {
+    const queryBuilder = this.studentRepository.createQueryBuilder('student')
+      .leftJoinAndSelect('student.group', 'group'); // Agar o'quvchi guruhga biriktirilgan bo'lsa
 
     if (search) {
       queryBuilder.where(
